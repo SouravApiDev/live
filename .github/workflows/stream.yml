@@ -1,4 +1,4 @@
-name: Stream Video to YouTube & Facebook
+name: Stream from Cloudflare R2
 
 on:
   workflow_dispatch:
@@ -6,17 +6,17 @@ on:
 jobs:
   stream:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
 
+    steps:
       - name: Install FFmpeg
         run: sudo apt update && sudo apt install -y ffmpeg
 
       - name: Stream to YouTube & Facebook
         run: |
-          ffmpeg -re -stream_loop -1 -i video.mp4 \
-          -c:v libx264 -preset veryfast -maxrate 2500k -bufsize 5000k \
+          ffmpeg -re -stream_loop -1 \
+          -i https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/video.mp4 \
+          -c:v libx264 -preset veryfast -b:v 2500k \
+          -maxrate 2500k -bufsize 5000k \
           -pix_fmt yuv420p -g 60 \
           -c:a aac -b:a 128k -ar 44100 \
           -f tee \
