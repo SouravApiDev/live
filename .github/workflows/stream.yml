@@ -1,4 +1,4 @@
-name: Stream from Cloudflare R2
+name: Stream 1
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ jobs:
       - name: Stream to YouTube & Facebook
         run: |
           ffmpeg -re -stream_loop -1 \
-          -i https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/video.mp4 \
+          -i https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/video2.mp4 \
           -map 0:v:0 -map 0:a:0 \
           -c:v libx264 -preset veryfast -maxrate 2500k -bufsize 5000k \
           -pix_fmt yuv420p -g 60 \
