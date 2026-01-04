@@ -20,4 +20,4 @@ jobs:
           -pix_fmt yuv420p -g 60 \
           -c:a aac -b:a 128k -ar 44100 \
           -f tee \
-          "[f=flv]rtmp://a.rtmp.youtube.com/live2/${{ secrets.YT_KEY }}|[f=flv]rtmps://live-api-s.facebook.com:443/rtmp/${{ secrets.FB_KEY }}"
+          "[f=flv]rtmp://a.rtmp.youtube.com/live2/${{ secrets.YT_KEY3 }}|[f=flv]rtmps://live-api-s.facebook.com:443/rtmp/${{ secrets.FB_KEY }}"
