@@ -1,1 +1,23 @@
+name: Stream 2
 
+on:
+  workflow_dispatch:
+
+jobs:
+  stream:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install FFmpeg
+        run: sudo apt update && sudo apt install -y ffmpeg
+
+      - name: Stream to YouTube & Facebook
+        run: |
+          ffmpeg -re -stream_loop -1 \
+          -i https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/video2.mp4 \
+          -map 0:v:0 -map 0:a:0 \
+          -c:v libx264 -preset veryfast -maxrate 2500k -bufsize 5000k \
+          -pix_fmt yuv420p -g 60 \
+          -c:a aac -b:a 128k -ar 44100 \
+          -f tee \
+          "[f=flv]rtmp://a.rtmp.youtube.com/live2/${{ secrets.YT_KEY }}|[f=flv]rtmps://live-api-s.facebook.com:443/rtmp/${{ secrets.FB_KEY }}"
