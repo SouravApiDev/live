@@ -1,23 +1,65 @@
-name: Stream 1
+name: YouTube Live Stream
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:   # manual start
+  push:
+    branches: [ main ] # optional auto-start on push
 
 jobs:
   stream:
     runs-on: ubuntu-latest
+    timeout-minutes: 360   # 6 hours (max safe)
 
     steps:
-      - name: Install FFmpeg
-        run: sudo apt update && sudo apt install -y ffmpeg
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Stream to YouTube & Facebook
+      - name: Install FFmpeg
         run: |
-          ffmpeg -re -stream_loop -1 \
-          -i https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/video2.mp4 \
-          -map 0:v:0 -map 0:a:0 \
-          -c:v libx264 -preset veryfast -maxrate 2500k -bufsize 5000k \
-          -pix_fmt yuv420p -g 60 \
-          -c:a aac -b:a 128k -ar 44100 \
-          -f tee \
-          "[f=flv]rtmp://a.rtmp.youtube.com/live2/${{ secrets.YT_KEY }}|[f=flv]rtmps://live-api-s.facebook.com:443/rtmp/${{ secrets.FB_KEY }}"
+          sudo apt update
+          sudo apt install -y ffmpeg curl ca-certificates
+
+      - name: Start YouTube Live Stream
+        env:
+          YT_STREAM_KEY: ${{ secrets.YT_KEY }}
+        run: |
+          STREAM_URL="rtmps://a.rtmp.youtube.com:443/live2/${YT_KEY}"
+
+          VIDEOS=(
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video1.mp4"
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video2.mp4"
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video3.mp4"
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video4.mp4"
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video5.mp4"
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video6.mp4"
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video7.mp4"
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video8.mp4"
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video9.mp4"
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video10.mp4"
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video11.mp4"
+            "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video12.mp4"
+          )
+
+          for VIDEO in "${VIDEOS[@]}"; do
+            echo "Streaming $VIDEO"
+
+            ffmpeg -re \
+              -i "$VIDEO" \
+              -c:v libx264 \
+              -preset veryfast \
+              -pix_fmt yuv420p \
+              -profile:v high \
+              -level 4.1 \
+              -b:v 2500k \
+              -maxrate 2500k \
+              -bufsize 5000k \
+              -r 30 \
+              -g 60 \
+              -c:a aac \
+              -b:a 128k \
+              -ar 44100 \
+              -f flv \
+              "$STREAM_URL"
+
+            sleep 2
+          done
