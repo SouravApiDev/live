@@ -23,7 +23,7 @@ jobs:
         env:
           YT_STREAM_KEY: ${{ secrets.YT_KEY }}
         run: |
-          STREAM_URL="rtmps://a.rtmp.youtube.com:443/live2/${YT_KEY}"
+          STREAM_URL="rtmps://a.rtmp.youtube.com:443/live2/${{ secrets.YT_KEY2 }}"
 
           VIDEOS=(
             "https://pub-a6241c04cf144473b5938417adaa875f.r2.dev/sonibar_ar_raat/video1.mp4"
